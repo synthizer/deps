@@ -18,11 +18,26 @@ FetchContent_declare(...)
 parent repositories are responsible for the `FetchContent_MakeAvailable` calls, in order to only include what they use
 when they need it.
 
-In many cases, we add our own CMakeLists.txt file to the deps/third_party folder to e.g. provide an interface target.
+Note that if using google/benchmark, you probably need:
 
+```
+set(BENCHMARK_ENABLE_TESTING OFF)
+```
+
+At the top of your CMakeLists.txt.
+
+Additionally, for WDL's objlib target (`wdl_objlib`):
+
+```
+target_include_directories(test PRIVATE $<TARGET_PROPERTY:wdl_objlib,INTERFACE_INCLUDE_DIRECTORIES>)
+```
+Is required because CMake will not propagate this value itself.
+
+In many cases, we add our own CMakeLists.txt file to the deps/third_party folder to e.g. provide an interface target.
 
 The third-party dependencies are as follows. None require binary attribution: 
 
+- Benchmark is [google/benchmark](https://github.com/google/benchmark).
 - boost_partial is a header-only subset of Boost extracted with
   [BCP](https://www.boost.org/doc/libs/1_80_0/tools/bcp/doc/html/index.html).
 - [concurrentqueue](https://github.com/cameron314/concurrentqueue) is what it sounds like it is.

@@ -2,8 +2,16 @@ cmake_minimum_required(VERSION 3.15.0)
 project(syz_deps C CXX)
 include(FetchContent)
 
+# Apparently we have to do this globally because CMake won't let us set a define for a subdirectory. Without it
+# google/benchmark wants gtest.
+#
+# Users will also have to set this which is a shame.
+set(BENCHMARK_ENABLE_TESTING OFF)
+
 SET(THIRD_PARTY_DEPS
+  benchmark
   boost_partial
+  catch2
   concurrentqueue
   cpp11-on-multicore
   dr_libs
