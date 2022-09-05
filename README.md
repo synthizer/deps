@@ -18,15 +18,7 @@ FetchContent_declare(...)
 parent repositories are responsible for the `FetchContent_MakeAvailable` calls, in order to only include what they use
 when they need it.
 
-Note that if using google/benchmark, you probably need:
-
-```
-set(BENCHMARK_ENABLE_TESTING OFF)
-```
-
-At the top of your CMakeLists.txt.
-
-Additionally, for WDL's objlib target (`wdl_objlib`):
+For WDL's objlib target (`wdl_objlib`):
 
 ```
 target_include_directories(test PRIVATE $<TARGET_PROPERTY:wdl_objlib,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -35,11 +27,13 @@ Is required because CMake will not propagate this value itself.
 
 In many cases, we add our own CMakeLists.txt file to the deps/third_party folder to e.g. provide an interface target.
 
-The third-party dependencies are as follows. None require binary attribution: 
+The third-party dependencies are as follows. None require binary attribution, and all are available as
+`FetchContent_MakeAvailable` after an `add_subdirectory` to this repo:
 
 - Benchmark is [google/benchmark](https://github.com/google/benchmark).
 - boost_partial is a header-only subset of Boost extracted with
   [BCP](https://www.boost.org/doc/libs/1_80_0/tools/bcp/doc/html/index.html).
+- [catch2](https://github.com/catchorg/Catch2) is a C++ testing framework.
 - [concurrentqueue](https://github.com/cameron314/concurrentqueue) is what it sounds like it is.
 - cpp-11-on-multicore is a set of utilities from [here](https://github.com/preshing/cpp11-on-multicore) for, e.g.,
   semaphores.
@@ -50,3 +44,37 @@ The third-party dependencies are as follows. None require binary attribution:
 - [pdqsort](https://github.com/orlp/pdqsort) is pattern-defeating quicksort, an unstable sorting algorithm that requires
   no additional memory.
 - [WDL](https://www.cockos.com/wdl/) is an SDK from Cockos, the authors of Reaper, with various DSP-related utilities.
+
+# Notes on Specific Deps
+
+## Benchmark
+
+You probably need:
+
+```
+set(BENCHMARK_ENABLE_TESTING OFF)
+```
+
+At the top of your CMakeLists.txt.  This has to be done globally and disables Benchmark's test building, which wants
+gtest.
+
+## catch2
+
+Catch2 provides a CMake integration, which requires an additional CMake include directory.  Use:
+
+```
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
+INCLUDE(Catch)
+```
+
+To enable it.
+
+## WDL
+
+For WDL's objlib target (`wdl_objlib`):
+
+```
+target_include_directories(test PRIVATE $<TARGET_PROPERTY:wdl_objlib,INTERFACE_INCLUDE_DIRECTORIES>)
+```
+
+Is required because CMake will not propagate this value itself.
