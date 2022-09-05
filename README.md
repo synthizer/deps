@@ -78,3 +78,10 @@ target_include_directories(test PRIVATE $<TARGET_PROPERTY:wdl_objlib,INTERFACE_I
 ```
 
 Is required because CMake will not propagate this value itself.
+
+
+Same for:
+
+```
+target_compile_definitions(mytarget WDL_RESAMPLE_TYPE=float)
+```
